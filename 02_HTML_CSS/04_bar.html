@@ -12,39 +12,30 @@
 				background: #eee;
 				margin-top: 100px;
 				position: relative;
+				width: 900px;
 			}
 			
-			#chart div {
+			#chart div { 			/* common attributes for all divs below #chart */			
 				position: absolute;
 				bottom: 0;
 				width: 95px;
 				text-align: center;
 				margin-top: 1em;
 				font-weight: bold;
-				
+				color: #000;
 			}
+			
 			#one {
 				height: 270px;
 				left: 0px;
+				background: rgba(255,0,0,0.3);
 			}
 			
 			#two {
 				height: 120px;
 				left: 100px;
-			}
-			
-		
-			
-			.red {
-				background: rgba(255,0,0,0.3);
-				color: #000;
-			}
-			
-			.blue {
 				background: rgba(0,0,255,0.3);
-				color: #000;
 			}
-			
 			
 		</style>
 	</head>
@@ -52,10 +43,10 @@
 		<div class="container">
 			
 			<h1>Div Bar Chart</h1>
-			
+			<h3>Dataset: 41, 26, 19, 31, 59, 28, 93, 99, 23, <em>36</em></h3>
 			<div id="chart">
-				<div id="one" class="blue">1</div>
-				<div id="two" class="red">2</div>
+				<div id="one">1</div>
+				<div id="two">2</div>
 			</div>
 			
 		</div>
