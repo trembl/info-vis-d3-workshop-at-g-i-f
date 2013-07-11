@@ -72,7 +72,9 @@
 			$("#chart").empty();
 		}
 		
-		$("#add").on("click", addBar());
+		$("#add").on("click", function() {
+			addBar();
+		});
 		
 		$("#clear").on("click", function() {
 			clearBars();
