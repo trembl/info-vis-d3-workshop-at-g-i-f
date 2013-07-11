@@ -2,41 +2,41 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Slider</title>
+		<title>Control</title>
 		<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" charset="utf-8">
 		<style type="text/css" media="screen">
 			
-			#red {
-				background: #f00;
-				color: #fff;
-				width:30px;
-				display: inline-block;
+			#chart {
+				height: 300px;
+				background: #eee;
+				margin-top: 100px;
+				position: relative;
+				width: 900px;
 			}
+			
 		</style>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Slider</h1>
+			<h1>Control</h1>
 			
 			<div class="span12">
-				<input id="redSlider" type="range" min="0" max="255" step="1" value="255">
-				<div id="red">255</div>
-				
+				<div id="chart"></div>
 			</div>
-		
+			
 		</div>
 	</body>
 	<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 	
+	
+		// select chart, get its background color
+		$("#chart").css("background-color");
 		
-		$("#redSlider").on("change", function() {
-			var value = $("#redSlider").val();
-			$("#red").html(value);
+		// select chart, set its background color
+		$("#chart").css("background-color", "#f00");
+
 			
-			$("#red").css("background-color", "rgb(" + value + ", 0, 0)" );
-			
-		});
 
 	</script>
 </html>

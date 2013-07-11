@@ -34,11 +34,6 @@
 			<h1>Control</h1>
 			
 			<div class="span12">
-				<button id="add" class="btn">Add</button>
-				<button id="clear" class="btn">Clear</button>
-			</div>
-			
-			<div class="span12">
 				<div id="chart"></div>
 			</div>
 			
@@ -49,30 +44,27 @@
 	
 	
 		var left = 0;
-		var addDiv = function() {
-			$("#chart").append("<div>new Div</div>");
-			newDiv = $("#chart div").last();
-			newDiv.css("left", left + "px");
-			var height = Math.round( Math.random() * 300);
-			newDiv.height(height + "px");
-			newDiv.html(height);
+		
+		var addBar = function() {
+			var value = getRandom(300);
+			var bar = $("<div>" + value + "</div>");
+			
+			bar
+				.css("left", left + "px")
+				.height(value);
+			
+			$("#chart").append(bar);
+			
 			left = left + 100;
 		}
 		
-		var clearDivs = function() {
-			left = 0;
-			$("#chart").empty();
+		var getRandom = function(limit) {
+			var r = 0;
+			r = Math.random();
+			r = r * limit;
+			r = Math.round(r);
+			return r;
 		}
-		
-		$("#add").on("click", function() {
-			addDiv();
-		});
-		
-		$("#clear").on("click", function() {
-			clearDivs();
-		});
-
-	
 			
 
 	</script>

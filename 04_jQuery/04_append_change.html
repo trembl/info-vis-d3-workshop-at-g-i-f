@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Control</title>
+		<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" charset="utf-8">
+		<style type="text/css" media="screen">
+			
+			#chart {
+				height: 300px;
+				background: #eee;
+				margin-top: 100px;
+				position: relative;
+				width: 900px;
+			}
+
+			#chart div { 			/* common attributes for all divs below #chart */			
+				position: absolute;
+				bottom: 0;
+				width: 95px;
+				text-align: center;
+				margin-top: 1em;
+				font-weight: bold;
+				color: #000;
+				height: 200px;
+				left: 0px;
+				background: rgba(255,0,0,0.3);
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Control</h1>
+			
+			<div class="span12">
+				<div id="chart"></div>
+			</div>
+			
+		</div>
+	</body>
+	<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+	
+	
+		var left = 0;
+		
+		var addBar = function() {
+			
+			var bar = $("<div class='bar'>Bar</div>");
+			
+			bar
+				.css("left", left + "px")
+				.height( getRandom(300) )
+				.width( getRandom(95) );
+			
+			$("#chart").append(bar);
+			
+			left = left + 100;
+		}
+		
+		var getRandom = function(limit) {
+			var r = 0;
+			r = Math.random();
+			r = r * limit;
+			r = Math.round(r);
+			return r;
+		}
+			
+
+	</script>
+</html>
