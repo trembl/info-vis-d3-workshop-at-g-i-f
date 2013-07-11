@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Count, Control, Compare</title>
+		<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" charset="utf-8">
+		<style type="text/css" media="screen">
+			
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Count, Control, Compare</h1>
+			<h3>Can't see the console? View &gt; Developer &gt; Javascript Console (Chrome, OSX) </h3>
+			
+		</div>
+	</body>
+	<script type="text/javascript">
+	
+	
+		for (var i=0; i<20; i++) {
+			console.log(i);
+			
+			if (i === 10) {
+				console.log("i is 10");
+			} else {
+				// console.log("i is not 10");
+			}
+		}	
+			
+		
+		var range = function(from, to, gap) {
+			console.log(arguments);
+			var output = [];
+			
+			for (var i=from; i<=to; i=i+gap) {
+				output.push(i);
+			}
+			return output;
+		}
+
+	</script>
+</html>

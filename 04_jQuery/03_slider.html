@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Slider</title>
+		<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" charset="utf-8">
+		<style type="text/css" media="screen">
+			
+			#red {
+				background: #f00;
+				color: #fff;
+				width:30px;
+				display: inline-block;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Slider</h1>
+			
+			<div class="span12">
+				<input id="redSlider" type="range" min="0" max="255" step="1" value="255">
+				<div id="red">255</div>
+				
+			</div>
+		
+		</div>
+	</body>
+	<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+	
+		
+		$("#redSlider").on("change", function() {
+			var value = $("#redSlider").val();
+			$("#red").html(value);
+			
+			$("#red").css("background-color", "rgb(" + value + ", 0, 0)" );
+			
+		});
+
+	</script>
+</html>
