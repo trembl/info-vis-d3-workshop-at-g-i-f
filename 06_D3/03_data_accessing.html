@@ -36,7 +36,7 @@
 		var svg = d3.select("#graph").append("svg")
 			.attr("width", 600)
 			.attr("height", 400)
-			.attr("fill", "rgba(0,0,255,0.2)" );		// gives the same fill to all elements in the svg
+			.style("fill", "rgba(0,0,255,0.2)" );		// gives the same fill to all elements in the svg
 			
 		var circles = svg.selectAll("circle")
 				.data(dataset)
