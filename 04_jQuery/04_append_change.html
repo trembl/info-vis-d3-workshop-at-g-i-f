@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Control</title>
+		<title>Change Height</title>
 		<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" charset="utf-8">
 		<style type="text/css" media="screen">
 			
@@ -31,7 +31,9 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Control</h1>
+			<div class="span12">
+				<h1>Change Height</h1>
+			</div>
 			
 			<div class="span12">
 				<div id="chart"></div>
@@ -52,7 +54,7 @@
 			bar
 				.css("left", left + "px")
 				.height( getRandom(300) )
-				.width( getRandom(95) );
+				.width(95)
 			
 			$("#chart").append(bar);
 			

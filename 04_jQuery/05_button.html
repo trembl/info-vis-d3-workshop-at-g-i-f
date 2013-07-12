@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Control</title>
+		<title>Buttons</title>
 		<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" charset="utf-8">
 		<style type="text/css" media="screen">
 			
@@ -31,7 +31,14 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Control</h1>
+			<div class="span12">
+				<h1>Buttons</h1>
+			</div>
+			
+			<div class="span12">
+				<button id="add" class="btn">Add</button>
+				<button id="clear" class="btn">Clear</button>
+			</div>
 			
 			<div class="span12">
 				<div id="chart"></div>
@@ -48,10 +55,8 @@
 		var addBar = function() {
 			var value = getRandom(300);
 			var bar = $("<div>" + value + "</div>");
-			
-			bar
-				.css("left", left + "px")
-				.height(value);
+			bar.css("left", left + "px");
+			bar.height(value);
 			
 			$("#chart").append(bar);
 			
@@ -59,13 +64,26 @@
 		}
 		
 		var getRandom = function(limit) {
-			var r = 0;
-			r = Math.random();
-			r = r * limit;
+			var r = Math.random() * limit;
 			r = Math.round(r);
 			return r;
 		}
-			
+		
+		var clearBars = function() {
+			left = 0;
+			$("#chart").empty();
+		}
+		
+		
+		$("#add").on("click", function() {
+			addBar();
+		});
+		
+		
+		$("#clear").on("click", function() {
+			clearBars();
+		});
+		
 
 	</script>
 </html>
