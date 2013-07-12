@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Data Binding</title>
+		<title>Data Agnostic</title>
 		<link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" charset="utf-8">
 		<style type="text/css" media="screen">
 			/* Additional styles go here*/
@@ -18,7 +18,7 @@
 	<body>
 		<div class="container">
 			<div class="span12">
-				<h1>Data Binding</h1>
+				<h1>Data Agnostic</h1>
 			</div>
 			
 			<div class="span12">
@@ -30,13 +30,18 @@
 	<script src="../js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		
-	//	var dataset = [41, 26, 19, 31, 59, 28, 93, 99, 23, 36];
-		var dataset = [34, 43, 36,41, 26, 19, 31, 59, 28, 93, 99, 23, 36];
-		
+		var dataset = [21, 26, 19, 31, 59, 28, 93, 99, 23, 36];
+	//	var dataset = [22, 25, 96, 41, 15, 19, 41, 51, 88, 23, 36];
+	//	var dataset = [22, 78, 28, 40, 31, 6, 20, 21, 25, 51, 85, 34, 21, 89, 89, 76, 39, 52, 45, 20];
+	//	var dataset = [20, 69, 1, 54, 71, 48, 13, 64, 91, 7, 16, 97, 54, 24];
+	//	var dataset = [2, 36, 45, 4, 72, 71, 76, 44, 7, 51, 74, 6, 91, 40, 86, 77, 54, 83, 29, 4, 12, 75, 70, 21, 72, 52, 27, 25, 13, 10];
+	//	var dataset = [40, 19, 33, 32, 41, 85, 47];
+	
+		console.log(dataset);
 		
 		var w = 600;
 		var h = 400;
-		var step = 600 / (dataset.length + 1);
+		var step = w / (dataset.length + 1);
 		
 		var svg = d3.select("#graph").append("svg")
 			.attr("width", w)
@@ -49,7 +54,7 @@
 				.append("circle")
 					.attr("r", function(d) { return d; })
 					.attr("cx", function(d, index) { return (index+1) * step; })
-					.attr("cy", 100);
+					.attr("cy", 150);
 		
 	</script>
 </html>

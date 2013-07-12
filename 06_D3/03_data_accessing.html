@@ -31,6 +31,7 @@
 	<script type="text/javascript">
 		
 		var dataset = [41, 26, 19, 31, 59, 28, 93, 99, 23, 36];
+		console.log(dataset);
 		
 		var svg = d3.select("#graph").append("svg")
 			.attr("width", 600)
@@ -42,11 +43,11 @@
 			.enter()
 				.append("circle")
 					.attr("r", function(d, index) { 
-						console.log(d, index);
+						console.log("data " + d, " at index " + index);
 						return d;
 					})
-					.attr("cx", 100)
-					.attr("cy", 100);
+					.attr("cx", 150)
+					.attr("cy", 150);
 		
 	</script>
 </html>
