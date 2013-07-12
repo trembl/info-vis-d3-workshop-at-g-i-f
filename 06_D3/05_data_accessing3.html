@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Data Binding</title>
+		<link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" charset="utf-8">
+		<style type="text/css" media="screen">
+			/* Additional styles go here*/
+			
+			#graph {
+				margin-top: 20px;
+			}
+			#graph svg {
+				background: #eee;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="span12">
+				<h1>Data Binding</h1>
+			</div>
+			
+			<div class="span12">
+				<div id="graph"></div>
+			</div>
+			
+		</div>		
+    </body>
+	<script src="../js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		
+	//	var dataset = [41, 26, 19, 31, 59, 28, 93, 99, 23, 36];
+		
+		var dataset = [41, 26, 19, 31];
+		
+		var svg = d3.select("#graph").append("svg")
+			.attr("width", 600)
+			.attr("height", 400)
+			.attr("fill", "rgba(0,0,255,0.2)" );		// gives the same fill to all elements in the svg
+			
+		var circles = svg.selectAll("rect")
+				.data(dataset)
+			.enter()
+				.append("rect")
+					.attr("width", 50)
+					.attr("height", function(d) { return d; })
+					.attr("x", function(d, index) { return 30 + index * 55; })
+					.attr("y", function(d) { return 400 - d; })
+		
+	</script>
+</html>
