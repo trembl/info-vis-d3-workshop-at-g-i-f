@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Data Animation</title>
+		<title>Data Colors</title>
 		<link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" charset="utf-8">
 		<style type="text/css" media="screen">
 			/* Additional styles go here*/
@@ -26,7 +26,7 @@
 	<body>
 		<div class="container">
 			<div class="span12">
-				<h1>Data Animation</h1>
+				<h1>Data Colors</h1>
 			</div>
 			
 			<div class="span12">
@@ -38,16 +38,22 @@
 	<script src="../js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		
-		var dataset1 = [21, 26, 19, 31, 59, 28, 93, 99, 23, 36];
-	//	var dataset1 = [22, 25, 96, 41, 15, 19, 41, 51, 88, 23];
-	//	var dataset1 = [22, 78, 28, 40, 31, 6, 20, 21, 25, 51];
+		var dataset = [21, 26, 19, 31, 59, 28, 93, 99, 23, 36];
+	//	var dataset = [22, 25, 96, 41, 15, 19, 41, 51, 88, 23, 36];
+		var dataset = [22, 78, 28, 40, 31, 6, 20, 21, 25, 51, 85, 34, 21, 77, 89, 76, 39, 52, 45, 20];
+	//	var dataset = [20, 69, 7, 54, 71, 48, 13, 64, 91, 7, 16, 97, 54, 24];
+	//	var dataset = [2, 36, 45, 4, 72, 71, 76, 44, 7, 51, 74, 6, 91, 40, 86, 77, 54, 83, 29, 4, 12, 75, 70, 21, 72, 52, 27, 25, 13, 10];
+	//	var dataset = [40, 19, 33, 32, 41, 85, 47];
 	
-		var dataset2 = [20, 69, 7, 54, 71, 48, 13, 64, 91, 7];
-	//	var dataset2 = [2, 36, 45, 4, 72, 71, 76, 44, 7, 51];
-	//	var dataset2 = [40, 19, 33, 32, 41, 85, 47, 23, 56, 6];
-	
-		console.log(dataset1);
-		console.log(dataset2);
+		console.log(dataset);
+		
+		var red = d3.rgb(255,0,0);
+		var green = d3.rgb(0,255,0);
+		var blue = d3.rgb(0,0.255);
+		
+		var categoryColors = d3.scale.category10();
+		
+		var redGreenInterpolation = d3.interpolateRgb(red, green);
 		
 		var w = 600;
 		var h = 400;
@@ -63,7 +69,7 @@
 			.attr("width", w)
 			.attr("height", h)
 			
-		var circles = svg.selectAll("rect")
+		var rects = svg.selectAll("rect")
 				.data(dataset)
 			.enter()
 				.append("rect")
@@ -72,7 +78,7 @@
 					.attr("height", function(d) { return scale(d); })
 					.attr("x", function(d, index) { return index * rectWidth; })
 					.attr("y", function(d) { return h - scale(d); })
-					.attr("fill", "rgba(0,0,255,0.6)" );
+					.style("fill", red);
 					
 		
 	</script>
