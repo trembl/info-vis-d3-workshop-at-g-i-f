@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Data Animation</title>
+		<title>Data Transition</title>
 		<link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" charset="utf-8">
 		<style type="text/css" media="screen">
 			/* Additional styles go here*/
@@ -26,8 +26,14 @@
 	<body>
 		<div class="container">
 			<div class="span12">
-				<h1>Data Animation</h1>
+				<h1>Data Transition</h1>
 			</div>
+			
+			<div class="span12">
+				<button id="d1" class="btn">Dataset 1</button>
+				<button id="d2" class="btn">Dataset 2</button>
+			</div>
+			
 			
 			<div class="span12">
 				<div id="graph"></div>
@@ -35,26 +41,34 @@
 			
 		</div>		
     </body>
+	<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+				
+		var dataset1 = [56, 67, 2, 70, 87, 30, 35, 90, 69, 41, 56, 71, 46, 39, 36, 84, 24, 65, 69, 54, 17, 16, 58, 40, 26];
+	//	var dataset1 = [21, 27, 48, 73, 54, 67, 26, 62, 33, 53, 30, 52, 38, 16, 30, 67, 86, 43, 47, 56, 31, 35, 89, 85, 87];
+	//	var dataset1 = [95, 11, 91, 24, 89, 96, 31, 63, 8, 85, 63, 62, 66, 15, 94, 55, 57, 20, 57, 68, 26, 94, 69, 83, 66];
+	
+		var dataset2 = [46, 45, 4, 17, 61, 59, 28, 57, 92, 75, 65, 70, 76, 5, 64, 65, 79, 1, 85, 85, 91, 20, 79, 80, 45];
+		var dataset2 = [66, 75, 48, 99, 69, 85, 82, 6, 46, 40, 97, 0, 64, 56, 47, 46, 52, 93, 94, 27, 29, 17, 95, 44, 68];
+		var dataset2 = [74, 85, 5, 70, 14, 33, 1, 24, 84, 16, 61, 25, 68, 89, 23, 11, 19, 82, 50, 78, 69, 47, 58, 37, 43];
 		
-		var dataset1 = [21, 26, 19, 31, 59, 28, 93, 99, 23, 36];
-	//	var dataset1 = [22, 25, 96, 41, 15, 19, 41, 51, 88, 23];
-	//	var dataset1 = [22, 78, 28, 40, 31, 6, 20, 21, 25, 51];
-	
-		var dataset2 = [20, 69, 7, 54, 71, 48, 13, 64, 91, 7];
-	//	var dataset2 = [2, 36, 45, 4, 72, 71, 76, 44, 7, 51];
-	//	var dataset2 = [40, 19, 33, 32, 41, 85, 47, 23, 56, 6];
-	
 		console.log(dataset1);
 		console.log(dataset2);
+		
+		var dataset = dataset1;		// initally use dataset1
 		
 		var w = 600;
 		var h = 400;
 		
+		// Interpolating the color
+		var colorInterpolation = d3.interpolateRgb(d3.rgb(0,0,255), d3.rgb(0,255,0));
+		var colorScale = d3.scale.linear()
+						.domain([0, d3.max(dataset)])
+						.range([0,1])
+						
 		var rectWidth = w/dataset.length;
 		
-		// var scale = ???
 		var scale = d3.scale.linear()
 					.domain([0, d3.max(dataset)])
 					.range([0,h])
@@ -63,7 +77,7 @@
 			.attr("width", w)
 			.attr("height", h)
 			
-		var circles = svg.selectAll("rect")
+		var bars = svg.selectAll("rect")
 				.data(dataset)
 			.enter()
 				.append("rect")
@@ -72,8 +86,41 @@
 					.attr("height", function(d) { return scale(d); })
 					.attr("x", function(d, index) { return index * rectWidth; })
 					.attr("y", function(d) { return h - scale(d); })
-					.style("fill", "rgba(0,0,255,0.6)" );
+					.style("fill", function(d) { return colorInterpolation( colorScale(d)) });
 					
+				
+	
+		
+		// Button actions
+		$("#d1").on("click", function() {
+			updateBars(dataset1);
+		});
+		
+		$("#d2").on("click", function() {
+			updateBarsWithTransition(dataset2);
+		});
+		
+		// updating the bars
+		var updateBars = function(newDataset) {
+			bars
+				.data(newDataset)									// assign new data
+				.attr("height", function(d) { return scale(d); })	// recalulates height, y and fill..
+				.attr("y", function(d) { return h - scale(d); })
+				.style("fill", function(d) { return colorInterpolation( colorScale(d)) });
+		}
+		
+		// updating the bars with transition
+		var updateBarsWithTransition = function(newDataset) {
+			bars
+				.data(newDataset)									// assign new data
+				.transition()				
+					.duration(2000)									// transiation duration
+				.attr("height", function(d) { return scale(d); })	// recalulates height, y and fill..
+				.attr("y", function(d) { return h - scale(d); })
+				.style("fill", function(d) { return colorInterpolation( colorScale(d)) });
+		}
+		
+	
 		
 	</script>
 </html>
