@@ -16,9 +16,10 @@
 			}
 			
 			.dots {
-				fill: rgba(0,0,255,0.6);
+				fill: rgba(0,0,255,1);
 				stroke: #eee;
 				stroke-width: 1.5px;
+				fill-opacity: 0.7
 			}
 			
 		</style>
@@ -32,6 +33,7 @@
 			<div class="span12">
 				<button id="d1" class="btn">Dataset 1</button>
 				<button id="d2" class="btn">Dataset 2</button>
+				<button id="d3" class="btn">Random</button>
 			</div>
 			
 			<div class="span12">
@@ -47,7 +49,7 @@
 		// generate a random data set for the scatterplot
 		var generateRandomData = function() {
 			var data = [];
-			for (var i=0; i<100; i++) {
+			for (var i=0; i<50; i++) {
 				var x = Math.floor(Math.random() * 100);
 				var y = Math.floor(Math.random() * 100);
 				var r = 4 + Math.floor(Math.random() * 10);
@@ -59,22 +61,42 @@
 		}
 		
 		var dataset = generateRandomData();
-	
-		var w = 600;
-		var h = 400;
+		var dataset2 = generateRandomData();
 		
+		var w = 800;
+		var h = 500;
+		
+		var scaleColor = d3.scale.category20b();
 						
 		var rectWidth = w/dataset.length;
 		
 		// making an array with only .x, to get min and max values
 		var xArray = [];
+		var yArray = [];
+		var rArray = [];
 		for(var i=0; i<dataset.length; i++) {
 			xArray.push(dataset[i].x);
+			yArray.push(dataset[i].y);
+			rArray.push(dataset[i].r);
 		}
 		
 		var xScale = d3.scale.linear()
 					.domain([0, d3.max(xArray)])
-					.range([0,w])
+					.range([0,w]);
+		
+		var yScale = d3.scale.linear()
+					.domain([0, d3.max(yArray)])
+					.range([0,h]);
+		
+		var rScale = d3.scale.linear()
+					.domain([0, d3.max(rArray)])
+					.range([5, 40]);		
+		
+		var colorInterpolation = d3.interpolateRgb(d3.rgb(0,255,0), d3.rgb(0,0,255));
+		var colorScale = d3.scale.linear()
+								.domain([0, d3.max(rArray)])
+								.range([0,1])	
+		
 		
 		var svg = d3.select("#graph").append("svg")
 			.attr("width", w)
@@ -86,21 +108,57 @@
 				.append("circle")
 					.attr("class", "dots")
 					.attr("cx", function(d) { return xScale(d.x); })
-					.attr("cy", function(d) { return d.y + 100; })
-					.attr("r", function(d) { return d.r; })
-					.style("fill", "#4ac");
+					.attr("cy", function(d) { return yScale(d.y); })
+					.attr("r", function(d) { return rScale(d.r); })
+					
+			//		.style("fill", function(d) { return colorInterpolation(colorScale(d.r)); });
+					.style("fill", function(d) { return scaleColor(d.r) });
+			
 					
 				
 		// Button actions
 		$("#d1").on("click", function() {
-			console.log("Button 1");
+			updateDots(dataset);
 		});
 
 		$("#d2").on("click", function() {
-			console.log("Button 2");
+			updateDots(dataset2);
+		});
+		
+		$("#d3").on("click", function() {
+			var newDataset = generateRandomData();
+			updateDots(newDataset);
 		});
 
+		// updating the bars
+		var updateDots = function(newDataset) {
+			oldData = dots.data();
+		
+			dots
+				.data(newDataset)									// assign new data
+				.transition()				
+					.duration(1000)
+				.attr("cx", function(d) { return xScale(d.x); })
+				.attr("cy", function(d) { return yScale(d.y); })
+				.attr("r", function(d) { return rScale(d.r); })
+				.delay(function(d, i) { 
+					var delay = oldData[i].r * 500;
+					console.log(d, i, delay);
+					return delay; 
+					})
+				.style("fill", function(d) { return colorInterpolation(colorScale(d.r)); });
+		}
 	
+	/*
+		// loop
+		$(document).ready(function() {
+			var intervalID = window.setInterval(loop, 10000);
+		})
+		
+		var loop = function() {
+			updateDots(generateRandomData());
+		}
+		*/
 		
 	</script>
 </html>

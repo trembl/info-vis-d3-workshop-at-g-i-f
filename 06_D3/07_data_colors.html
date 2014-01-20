@@ -54,6 +54,7 @@
 		var categoryColors = d3.scale.category10();
 		
 		var colorInterpolation = d3.interpolateRgb(blue, green);
+		
 		var colorScale = d3.scale.linear()
 						.domain([0, d3.max(dataset)])
 						.range([0,1])
@@ -80,7 +81,7 @@
 					.attr("height", function(d) { return scale(d); })
 					.attr("x", function(d, index) { return index * rectWidth; })
 					.attr("y", function(d) { return h - scale(d); })
-					.style("fill", function(d) { return blueGreenInterpolation( colorScale(d)) });
+					.style("fill", function(d) { return colorInterpolation( colorScale(d)) });
 					
 		
 	</script>

@@ -41,7 +41,7 @@
 		
 		var w = 600;
 		var h = 400;
-	//	var step = ???
+		var step = w/10;
 		
 		var svg = d3.select("#graph").append("svg")
 			.attr("width", w)
@@ -53,7 +53,7 @@
 			.enter()
 				.append("circle")
 					.attr("r", function(d) { return d; })
-					.attr("cx", function(d, index) { return 50 + step * 50; })			// change this, so it works with other datasets too
+					.attr("cx", function(d, index) { return 50 + (step * index); })			// change this, so it works with other datasets too
 					.attr("cy", 150);
 		
 	</script>

@@ -35,14 +35,20 @@
 		var svg = d3.select("#graph").append("svg")
 			.attr("width", 600)
 			.attr("height", 400)
-			.style("fill", "rgba(0,0,255,0.1)" );		// gives the same fill to all elements in the svg
+			.style("fill", "rgba(0,0,255,0.5)" );		// gives the same fill to all elements in the svg
 			
 		var circles = svg.selectAll("circle")
 				.data(dataset)
 			.enter()
 				.append("circle")
-					.attr("r", 70)
-					.attr("cx", 150)
+					.attr("r", function(d) {
+						console.log(d);
+						return d;
+					})
+					.attr("cx", function(d,index) {
+						console.log(d, index);
+						return index * 60;
+					})
 					.attr("cy", 150);
 		
 	</script>
