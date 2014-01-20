@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Scatterplot</title>
+	<link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" charset="utf-8">
+	<style type="text/css" media="screen">
+		/* Additional styles go here*/
+		
+		body {
+			background: #eee;
+			color: #333;
+			padding: 0;
+			margin: 0;
+		}
+		
+		.container, .span12 {
+			padding: 0;
+			margin: 0;
+		}
+		
+		#graph {
+			margin: 0px;
+		}
+		
+		#graph svg {
+			background: #fff;
+		}
+		
+		.dots {
+			fill: rgba(0,0,255,0.7);
+			stroke: #fff;
+			stroke-width: 1px;
+			fill-opacity: 1;
+		}
+		
+		#control {
+			position: absolute;
+			top: 0;
+			left: 0;
+			float: left;
+			z-index: 100;
+			margin: 20px;
+		}
+		#content {
+			position: absolute;
+			top: 0;
+			left: 0;
+			float: left;
+			
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+
+		
+		<div class="span12" id="content">
+			<div id="graph"></div>
+		</div>
+		
+		<div class="span12" id="control">
+			<h1>Scatterplot</h1>
+			<select id="buttonDataset">
+				<option value="dataset1">Dataset 1</option>
+				<option value="dataset2">Dataset 2</option>
+				<option value="dataset3">Dataset 3</option>
+				<option value="random">Random</option>
+			</select>
+			<br />
+			<select id="buttonColor">
+				<option value="c1">Color 1</option>
+				<option value="c2">Color 2</option>
+				<option value="c3">Color 3</option>
+				<option value="bw">Black/White</option>
+				<option value="wb">White/Black</option>
+				<option value="gs">Grayscale</option>
+			</select>
+			<br />
+			<input id="sliderSize" type="range" min="1" max="100" value="50">
+		</div>
+	</div>		
+   </body>
+<script src="../js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+// generate a random data set for the scatterplot
+var generateRandomData = function() {
+	var data = [];
+	for (var i=0; i<50; i++) {
+		var x = Math.floor(Math.random() * 100);
+		var y = Math.floor(Math.random() * 100);
+		var r = 4 + Math.floor(Math.random() * 1000);
+		var group = Math.floor(Math.random() * 10);
+		var obj = {x:x, y:y, r:r, group:group};
+		data.push(obj);
+	}
+	return data;
+}
+
+var dataset = {};
+dataset['dataset1'] = generateRandomData();
+dataset['dataset2'] = generateRandomData();
+dataset['dataset3'] = generateRandomData();
+var currentDataset = dataset['dataset1'];
+
+// Dataset select
+$("#buttonDataset").on("change", function(e) {
+			if ($(this).val() === 'random') {
+		currentDataset = generateRandomData();
+	} else {
+		currentDataset = dataset[$(this).val()];
+	}
+	updateDots(currentDataset);
+});
+	
+
+
+var cInt = d3.interpolateRgb(d3.rgb(255,255,0), d3.rgb(255,0,255));
+var cScale = d3.scale.linear()
+						.domain([0, 20])
+						.range([0,1])	
+
+var colorScale = d3.scale.category20();
+
+
+var colors = {};
+colors.c1 = d3.scale.category20();
+colors.c2 = d3.scale.category20b();
+colors.c3 = d3.scale.category20c();
+colors.bw = function() { return d3.rgb(0,0,0);};
+colors.wb = function() { return d3.rgb(255,255,255);};
+
+var gsInterpolation = d3.interpolateRgb(d3.rgb(0,0,0), d3.rgb(255,255,255));
+var gsScale = d3.scale.linear()
+						.domain([0, 20])
+						.range([0,1])
+colors.gs = function(a) {
+	console.log("a", a);
+	return gsInterpolation(gsScale(a));
+}
+
+var currentColor = colors.c1;
+
+// Color select
+$("#buttonColor").on("change", function(e) {
+	var c = $(this).val();
+	console.log(c);
+
+	var newColor = colors[c];
+	
+	if ('bw'===c) {
+		$("#graph svg").css('backgroundColor', "#fff");
+		$("#graph .dots").css('stroke', "#fff");
+	} else if ('wb'===c) {
+		$("#graph svg").css('backgroundColor', "#000");
+		$("#graph .dots").css('stroke', "#000")
+	} else if ('gs'===c) {
+		$("#graph svg").css('backgroundColor', "#999");
+	}
+
+
+	dots.transition()				
+		.duration(1000)
+		.style("fill", function(d) { 
+			console.log(newColor(d.r));
+			return newColor(d.r%20); 
+		});
+});
+
+
+
+$("#sliderSize").on("change", function(e) {
+	var v = $(this).val() / 50;
+
+		dots
+			.attr("r", function(d) { return rScale(d.r*v); });
+	
+});
+
+
+	
+
+
+
+
+
+
+var w = 800;
+var h = 600;
+
+				
+var rectWidth = w/currentDataset.length;
+
+// making an array with only .x, to get min and max values
+var xArray = [];
+var yArray = [];
+var rArray = [];
+for(var i=0; i<currentDataset.length; i++) {
+	xArray.push(currentDataset[i].x);
+	yArray.push(currentDataset[i].y);
+	rArray.push(currentDataset[i].r);
+}
+
+var xScale = d3.scale.linear()
+			.domain([0, d3.max(xArray)])
+			.range([d3.max(xArray),w-d3.max(xArray)]);
+
+var yScale = d3.scale.linear()
+			.domain([0, d3.max(yArray)])
+			.range([d3.max(yArray),h-d3.max(yArray)]);
+
+var rScale = d3.scale.linear()
+			.domain([0, d3.max(rArray)])
+			.range([2, 100]);		
+
+
+
+var svg = d3.select("#graph").append("svg")
+	.attr("width", w)
+	.attr("height", h)
+	
+var dots = svg.selectAll("circle")
+		.data(currentDataset)
+	.enter()
+		.append("circle")
+			.attr("class", "dots")
+			.attr("cx", function(d) { return xScale(d.x); })
+			.attr("cy", function(d) { return yScale(d.y); })
+			.attr("r", function(d) { return rScale(d.r); })
+		//	.style("fill", function(d) { return colorInterpolation(colorScale(d.r)); });
+			.style("fill", function(d) { return colorScale(d.r); });
+		
+
+
+
+// updating the dots
+
+var updateDots = function(newDataset) {
+//	currentDataset = newDataset;
+	dots
+		.data(newDataset)									// assign new data
+		.transition()				
+			.duration(2000)
+			.delay(function(d, i) { 
+				return i*100;
+			})
+			.attr("cx", function(d) { return xScale(d.x); })
+			.attr("cy", function(d) { return yScale(d.y); })
+			.attr("r", function(d) { return rScale(d.r); })
+		//	.style("fill", function(d) { return colorInterpolation(colorScale(d.r)); });
+			.style("fill", function(d) { return colorScale(d.r); });
+}
+
+var scaleDotsDown = function() {
+	dots
+	//	.data(newDataset)									// assign new data
+		.transition()				
+			.duration(1000)
+			.delay(function(d, i) { 
+				return i*10;
+			})
+			.attr("r", 10)
+}
+
+var scaleDotsUp = function() {
+	dots
+	//	.data(newDataset)									// assign new data
+		.transition()				
+			.duration(1000)
+			.delay(function(d, i) { 
+				return i*100;
+			})
+			.attr("r", function(d) { return rScale(d.r); })
+}
+
+/*
+// loop
+$(document).ready(function() {
+	var intervalID = window.setInterval(loop, 10000);
+})
+
+var loop = function() {
+	updateDots(generateRandomData());
+}
+*/
+	
+</script>
+</html>
