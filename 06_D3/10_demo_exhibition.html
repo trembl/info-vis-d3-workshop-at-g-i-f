@@ -8,7 +8,7 @@
 		/* Additional styles go here*/
 		
 		body {
-			background: #eee;
+			background: #fff;
 			color: #333;
 			padding: 0;
 			margin: 0;
@@ -24,7 +24,11 @@
 		}
 		
 		#graph svg {
-			background: #fff;
+		/*	background: rgba(255,255,255,0.7); */
+		}
+		
+		#graph svg:active {
+			cursor: default;
 		}
 		
 		.dots {
@@ -34,6 +38,10 @@
 			fill-opacity: 1;
 		}
 		
+		.dots:active {
+			cursor: move;
+		}
+		
 		#control {
 			position: absolute;
 			top: 0;
@@ -41,13 +49,26 @@
 			float: left;
 			z-index: 100;
 			margin: 20px;
+			pointer-events:none;
 		}
+		
+		#control select, #control input {
+			pointer-events:all;
+		}
+		
 		#content {
 			position: absolute;
 			top: 0;
 			left: 0;
 			float: left;
 			
+		}
+
+		#graph .voro {
+			display:none;
+			fill: #fff;
+			stroke: #000;
+			stroke-width: 1px;
 		}
 	</style>
 </head>
@@ -77,6 +98,11 @@
 				<option value="gs">Grayscale</option>
 			</select>
 			<br />
+			<select id="buttonDots">
+				<option value="dots">Dots</option>
+				<option value="voronoi">Dots & Voronoi</option>
+			</select>
+			<br />
 			<input id="sliderSize" type="range" min="1" max="100" value="50">
 		</div>
 	</div>		
@@ -85,15 +111,25 @@
 <script src="../js/d3.v3.min.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 
+var w = 1920;
+var h = 1080;
+
+var svg = d3.select("#graph").append("svg")
+	.attr("width", w)
+	.attr("height", h)
+	
+	
 // generate a random data set for the scatterplot
 var generateRandomData = function() {
 	var data = [];
 	for (var i=0; i<50; i++) {
-		var x = Math.floor(Math.random() * 100);
-		var y = Math.floor(Math.random() * 100);
-		var r = 4 + Math.floor(Math.random() * 1000);
-		var group = Math.floor(Math.random() * 10);
-		var obj = {x:x, y:y, r:r, group:group};
+		var obj = {};
+		obj.x = Math.floor(Math.random() * 100);
+		obj.y = Math.floor(Math.random() * 100);
+		obj.r = 4 + Math.floor(Math.random() * 100);
+		obj.originalR = obj.r;
+		
+		obj.group = Math.floor(Math.random() * 10);
 		data.push(obj);
 	}
 	return data;
@@ -105,94 +141,6 @@ dataset['dataset2'] = generateRandomData();
 dataset['dataset3'] = generateRandomData();
 var currentDataset = dataset['dataset1'];
 
-// Dataset select
-$("#buttonDataset").on("change", function(e) {
-			if ($(this).val() === 'random') {
-		currentDataset = generateRandomData();
-	} else {
-		currentDataset = dataset[$(this).val()];
-	}
-	updateDots(currentDataset);
-});
-	
-
-
-var cInt = d3.interpolateRgb(d3.rgb(255,255,0), d3.rgb(255,0,255));
-var cScale = d3.scale.linear()
-						.domain([0, 20])
-						.range([0,1])	
-
-var colorScale = d3.scale.category20();
-
-
-var colors = {};
-colors.c1 = d3.scale.category20();
-colors.c2 = d3.scale.category20b();
-colors.c3 = d3.scale.category20c();
-colors.bw = function() { return d3.rgb(0,0,0);};
-colors.wb = function() { return d3.rgb(255,255,255);};
-
-var gsInterpolation = d3.interpolateRgb(d3.rgb(0,0,0), d3.rgb(255,255,255));
-var gsScale = d3.scale.linear()
-						.domain([0, 20])
-						.range([0,1])
-colors.gs = function(a) {
-	console.log("a", a);
-	return gsInterpolation(gsScale(a));
-}
-
-var currentColor = colors.c1;
-
-// Color select
-$("#buttonColor").on("change", function(e) {
-	var c = $(this).val();
-	console.log(c);
-
-	var newColor = colors[c];
-	
-	if ('bw'===c) {
-		$("#graph svg").css('backgroundColor', "#fff");
-		$("#graph .dots").css('stroke', "#fff");
-	} else if ('wb'===c) {
-		$("#graph svg").css('backgroundColor', "#000");
-		$("#graph .dots").css('stroke', "#000")
-	} else if ('gs'===c) {
-		$("#graph svg").css('backgroundColor', "#999");
-	}
-
-
-	dots.transition()				
-		.duration(1000)
-		.style("fill", function(d) { 
-			console.log(newColor(d.r));
-			return newColor(d.r%20); 
-		});
-});
-
-
-
-$("#sliderSize").on("change", function(e) {
-	var v = $(this).val() / 50;
-
-		dots
-			.attr("r", function(d) { return rScale(d.r*v); });
-	
-});
-
-
-	
-
-
-
-
-
-
-var w = 800;
-var h = 600;
-
-				
-var rectWidth = w/currentDataset.length;
-
 // making an array with only .x, to get min and max values
 var xArray = [];
 var yArray = [];
@@ -203,6 +151,7 @@ for(var i=0; i<currentDataset.length; i++) {
 	rArray.push(currentDataset[i].r);
 }
 
+// Scales, for varying display resolution
 var xScale = d3.scale.linear()
 			.domain([0, d3.max(xArray)])
 			.range([d3.max(xArray),w-d3.max(xArray)]);
@@ -217,10 +166,115 @@ var rScale = d3.scale.linear()
 
 
 
-var svg = d3.select("#graph").append("svg")
-	.attr("width", w)
-	.attr("height", h)
+// Dataset select
+$("#buttonDataset").on("change", function(e) {
+			if ($(this).val() === 'random') {
+		currentDataset = generateRandomData();
+	} else {
+		currentDataset = dataset[$(this).val()];
+	}
+	updateDots(currentDataset);
+});
 	
+
+
+
+
+
+
+
+
+// Colors 
+var colors = {};
+colors.c1 = d3.scale.category20();
+colors.c2 = d3.scale.category20b();
+colors.c3 = d3.scale.category20c();
+colors.bw = function() { return d3.rgb(0,0,0);};
+colors.wb = function() { return d3.rgb(255,255,255);};
+var gsInterpolation = d3.interpolateRgb(d3.rgb(0,0,0), d3.rgb(255,255,255));
+var gsScale = d3.scale.linear().domain([0, 20]).range([0,1])
+colors.gs = function(a) { return gsInterpolation(gsScale(a)); }
+var currentColor = colors.c1;
+
+$("#buttonColor").on("change", function(e) {
+	var c = $(this).val();
+	var newColor = colors[c];
+	$("body").css('backgroundColor', "#fff");
+	if ('bw'===c) {
+		$("#graph .dots").css('stroke', "#fff");
+		$("#graph .voro").css('fill', "#fff");
+		$("#graph .voro").css('stroke', "#000");
+	} else if ('wb'===c) {
+		$("body").css('backgroundColor', "#000");
+		$("#graph .dots").css('stroke', "#000");
+		$("#graph .voro").css('fill', "#000");
+		$("#graph .voro").css('stroke', "#fff");
+	} else if ('gs'===c) {
+		$("body").css('backgroundColor', "#aaa");
+		$("#graph .voro").css('backgroundColor', "#aaa");
+		$("#graph .voro").css('stroke', "#000");
+	}
+	dots.transition()				
+		.duration(1000)
+		.style("fill", function(d) { return newColor(d.r%20); })
+		.each("end", function() { 
+			currentColor = newColor; 	// make new color current
+		})
+});
+
+
+// Size
+$("#sliderSize").on("change", function(e) {
+	var v = $(this).val() / 50;
+	
+	// update sizes
+	currentDataset.forEach(function(d) { 
+		d.r = d.originalR * v; 
+	});
+
+	// update display
+	dots
+		.data(currentDataset)
+		.attr("r", function(d) { return rScale(d.r); });
+});
+
+
+	
+var dotsOnly = true;
+$("#buttonDots").on("change", function(e) {
+	var v = $(this).val();
+	if (v==='dots') {
+		dotsOnly = true;
+		$(".voro").hide();
+	} else if (v==='voronoi') {
+		dotsOnly = false;
+		$(".voro").show();
+	}
+});
+
+
+
+
+
+
+				
+
+
+
+// Voronoi
+var voronoiGeom = d3.geom.voronoi()
+		.x(function(d) {return xScale(d.x)})
+		.y(function(d) {return yScale(d.y)});
+var voronoi = svg.selectAll("path")
+		.data(voronoiGeom(currentDataset))
+	.enter().append("path")
+		.attr("class", "voro")
+	//	.attr("class", function(d, i) { return i ? "q" + (i % 9) + "-9" : null; })
+		
+		.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+
+
+// Dots
 var dots = svg.selectAll("circle")
 		.data(currentDataset)
 	.enter()
@@ -229,10 +283,60 @@ var dots = svg.selectAll("circle")
 			.attr("cx", function(d) { return xScale(d.x); })
 			.attr("cy", function(d) { return yScale(d.y); })
 			.attr("r", function(d) { return rScale(d.r); })
-		//	.style("fill", function(d) { return colorInterpolation(colorScale(d.r)); });
-			.style("fill", function(d) { return colorScale(d.r); });
+			.style("fill", function(d) { return currentColor(d.r); });
 		
 
+// Dots Mouse Behaviour
+var dragging = false;
+var root, circleElement;
+dots.on("mousedown", function(circle) {
+	var mouse = d3.mouse(this);
+	
+	root = circle;
+	root.mouseDiff = {};
+	root.mouseDiff.x = xScale.invert(mouse[0]) - circle.x;
+	root.mouseDiff.y = yScale.invert(mouse[1]) - circle.y;
+	
+//	root.fixed = true;
+	root.color = this.style["fill"];				// temp save node color
+	this.style["fill"] = "f00";						// highlight node	
+	circleElement = this;							// save handler for circle svg	
+	dragging = true;
+});
+
+svg.on("mousemove", function() {
+	if (dragging) {
+		var mouse = d3.mouse(this);
+		root.x = root.px = xScale.invert(mouse[0]) - root.mouseDiff.x;
+		root.y = root.py = yScale.invert(mouse[1]) - root.mouseDiff.y;
+		updateGraphics();
+	}
+});
+
+svg.on("mouseup", function() {
+	if (dragging) {
+		dragging = false;
+		delete root.fixed;
+		circleElement.style["fill"] = root.color;		// restore color
+		delete root.color;
+	}
+});
+
+var updateGraphics = function() {
+	dots
+		.attr("cx", function(d) { return xScale(d.x); })
+		.attr("cy", function(d) { return yScale(d.y); });
+		
+		
+		voronoi
+			.data(voronoiGeom(currentDataset))
+		//	.map(function(d) { return "M" + d.join("L") + "Z"; })
+		//	.filter(function(d) { return d.getAttribute("d") != d; })
+			.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+		
+	
+
+}
 
 
 // updating the dots
@@ -243,48 +347,22 @@ var updateDots = function(newDataset) {
 		.data(newDataset)									// assign new data
 		.transition()				
 			.duration(2000)
-			.delay(function(d, i) { 
-				return i*100;
-			})
+			.delay(function(d, i) { return i*100; })
 			.attr("cx", function(d) { return xScale(d.x); })
 			.attr("cy", function(d) { return yScale(d.y); })
 			.attr("r", function(d) { return rScale(d.r); })
-		//	.style("fill", function(d) { return colorInterpolation(colorScale(d.r)); });
-			.style("fill", function(d) { return colorScale(d.r); });
+			.style("fill", function(d) { return currentColor(d.r); })
+		
+	
+		voronoi
+				.data(voronoiGeom(newDataset))
+			.transition()
+				.duration(2000)
+				.attr("d", function(d) { return "M" + d.join("L") + "Z"; });
+	
 }
 
-var scaleDotsDown = function() {
-	dots
-	//	.data(newDataset)									// assign new data
-		.transition()				
-			.duration(1000)
-			.delay(function(d, i) { 
-				return i*10;
-			})
-			.attr("r", 10)
-}
 
-var scaleDotsUp = function() {
-	dots
-	//	.data(newDataset)									// assign new data
-		.transition()				
-			.duration(1000)
-			.delay(function(d, i) { 
-				return i*100;
-			})
-			.attr("r", function(d) { return rScale(d.r); })
-}
-
-/*
-// loop
-$(document).ready(function() {
-	var intervalID = window.setInterval(loop, 10000);
-})
-
-var loop = function() {
-	updateDots(generateRandomData());
-}
-*/
 	
 </script>
 </html>
